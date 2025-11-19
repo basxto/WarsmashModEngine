@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+  <mime-type type="application/x-w3m">
+    <comment>Warcraft III map file</comment>
+    <comment xml:lang="de">Warcraft III Karte</comment>
+    <magic priority="50">
+      <match type="string" offset="0" value="HM3W"/>
+    </magic>
+    <glob pattern="*.w3m"/>
+    <glob pattern="*.w3x"/>
+  </mime-type>
+</mime-info>

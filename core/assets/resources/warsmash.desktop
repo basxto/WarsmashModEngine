@@ -7,6 +7,7 @@ Comment=An emulation engine to improve Warcraft III modding
 Comment[de]=Eine emulierte Spiele-Engine um das Modding von Warcraft-III zu verbessern
 Exec=warsmash %f
 Icon=warsmash
+MimeType=application/x-w3m;
 Terminal=false
 StartupNotify=false
 Categories=Game;
