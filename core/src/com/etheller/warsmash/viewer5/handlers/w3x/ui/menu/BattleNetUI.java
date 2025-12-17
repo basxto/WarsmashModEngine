@@ -167,11 +167,17 @@ public class BattleNetUI {
 		this.battleNetChangePasswordPanel = rootFrame.getFrameByName("ChangePasswordPanel", 0);
 		this.battleNetChangePasswordPanel.setVisible(false);
 		this.battleNetChangeEmailPanel = rootFrame.getFrameByName("ChangeEmailPanel", 0);
-		this.battleNetChangeEmailPanel.setVisible(false);
+		// demo doesn't use real account
+		if (this.battleNetChangeEmailPanel != null)
+			this.battleNetChangeEmailPanel.setVisible(false);
 		this.battleNetPasswordRecoveryPanel = rootFrame.getFrameByName("PasswordRecoveryPanel", 0);
-		this.battleNetPasswordRecoveryPanel.setVisible(false);
+		// fake account
+		if (this.battleNetPasswordRecoveryPanel != null)
+			this.battleNetPasswordRecoveryPanel.setVisible(false);
 		this.battleNetEmailBindPanel = rootFrame.getFrameByName("EmailBindPanel", 0);
-		this.battleNetEmailBindPanel.setVisible(false);
+		// fake account
+		if (this.battleNetEmailBindPanel != null)
+			this.battleNetEmailBindPanel.setVisible(false);
 
 		// *******************************************
 		// *
@@ -217,61 +223,73 @@ public class BattleNetUI {
 		};
 		this.accountNameEditBox.setOnEnter(logonRunnable);
 		this.passwordEditBox = (EditBoxFrame) rootFrame.getFrameByName("Password", 0);
-		this.passwordEditBox.setOnEnter(logonRunnable);
+		// fake account
+		if (this.passwordEditBox != null)
+			this.passwordEditBox.setOnEnter(logonRunnable);
 		this.passwordRecoveryButton = (GlueButtonFrame) rootFrame.getFrameByName("PasswordRecoveryButton", 0);
-		this.passwordRecoveryButton.setOnClick(new Runnable() {
-			@Override
-			public void run() {
-				actionListener.recoverPassword(BattleNetUI.this.accountNameEditBox.getText());
-			}
-		});
+		// fake account
+		if (this.passwordRecoveryButton != null) {
+			this.passwordRecoveryButton.setOnClick(new Runnable() {
+				@Override
+				public void run() {
+					actionListener.recoverPassword(BattleNetUI.this.accountNameEditBox.getText());
+				}
+			});
+		}
 		this.selectedRealmValue = (StringFrame) rootFrame.getFrameByName("SelectedRealmValue", 0);
 		this.changeEmailButton = (GlueButtonFrame) rootFrame.getFrameByName("ChangeEmailButton", 0);
-		this.changeEmailButton.setEnabled(false);
+		// fake account
+		if (this.changeEmailButton != null)
+			this.changeEmailButton.setEnabled(false);
 		this.changePasswordButton = (GlueButtonFrame) rootFrame.getFrameByName("ChangePasswordButton", 0);
 		this.newAccountButton = (GlueButtonFrame) rootFrame.getFrameByName("NewAccountButton", 0);
-		this.newAccountButton.setOnClick(new Runnable() {
-			@Override
-			public void run() {
-				BattleNetUI.this.battleNetLoginPanel.setVisible(false);
-				BattleNetUI.this.battleNetNewAccountPanel.setVisible(true);
-				BattleNetUI.this.battleNetOKBackdrop.setVisible(true);
-				BattleNetUI.this.okButton.setOnClick(new Runnable() {
-					@Override
-					public void run() {
-						actionListener.createAccount(BattleNetUI.this.naAccountName.getText(),
-								BattleNetUI.this.naPassword.getText(), BattleNetUI.this.naRepeatPassword.getText());
-					}
-				});
-				BattleNetUI.this.cancelButton.setOnClick(new Runnable() {
-					@Override
-					public void run() {
-						leaveNewAccountPanel();
-					}
-				});
-			}
-		});
-		this.tosButton = (GlueButtonFrame) rootFrame.getFrameByName("TOSButton", 0);
-		this.tosButton.setOnClick(new Runnable() {
-			@Override
-			public void run() {
-				boolean success = false;
-				if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-					try {
-						Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
-						success = true;
-					}
-					catch (final Exception e) {
-						e.printStackTrace();
-					}
-				}
-				if (!success) {
+		// fake account
+		if (this.newAccountButton != null) {
+			this.newAccountButton.setOnClick(new Runnable() {
+				@Override
+				public void run() {
 					BattleNetUI.this.battleNetLoginPanel.setVisible(false);
-					BattleNetUI.this.battleNetCancelBackdrop.setVisible(false);
-					BattleNetUI.this.battleNetTOSPanel.setVisible(true);
+					BattleNetUI.this.battleNetNewAccountPanel.setVisible(true);
+					BattleNetUI.this.battleNetOKBackdrop.setVisible(true);
+					BattleNetUI.this.okButton.setOnClick(new Runnable() {
+						@Override
+						public void run() {
+							actionListener.createAccount(BattleNetUI.this.naAccountName.getText(),
+									BattleNetUI.this.naPassword.getText(), BattleNetUI.this.naRepeatPassword.getText());
+						}
+					});
+					BattleNetUI.this.cancelButton.setOnClick(new Runnable() {
+						@Override
+						public void run() {
+							leaveNewAccountPanel();
+						}
+					});
 				}
-			}
-		});
+			});
+		}
+		this.tosButton = (GlueButtonFrame) rootFrame.getFrameByName("TOSButton", 0);
+		if (this.tosButton != null) {
+			this.tosButton.setOnClick(new Runnable() {
+				@Override
+				public void run() {
+					boolean success = false;
+					if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+						try {
+							Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+							success = true;
+						}
+						catch (final Exception e) {
+							e.printStackTrace();
+						}
+					}
+					if (!success) {
+						BattleNetUI.this.battleNetLoginPanel.setVisible(false);
+						BattleNetUI.this.battleNetCancelBackdrop.setVisible(false);
+						BattleNetUI.this.battleNetTOSPanel.setVisible(true);
+					}
+				}
+			});
+		}
 
 		this.exitLoginRunnable = new Runnable() {
 			@Override
@@ -281,7 +299,9 @@ public class BattleNetUI {
 		};
 
 		this.logonButton = (GlueButtonFrame) rootFrame.getFrameByName("LogonButton", 0);
-		this.logonButton.setOnClick(logonRunnable);
+		// fake account
+		if (this.logonButton != null)
+			this.logonButton.setOnClick(logonRunnable);
 
 		this.battleNetChatPanel = rootFrame.createFrame("BattleNetChatPanel", rootFrame, 0, 0);
 		this.battleNetChatPanel.setVisible(false);
@@ -290,15 +310,19 @@ public class BattleNetUI {
 		// * The chat panel
 		// ********************************
 		this.adFrame = (BackdropFrame) rootFrame.getFrameByName("AdFrame", 0);
-		this.adFrame.setVisible(false);
+		if (this.adFrame != null)
+			this.adFrame.setVisible(false);
 		this.logoFrame = (BackdropFrame) rootFrame.getFrameByName("LogoFrame", 0);
-		this.logoFrame.setVisible(false);
+		if (this.logoFrame != null)
+			this.logoFrame.setVisible(false);
 		this.standardGameButton = (GlueButtonFrame) rootFrame.getFrameByName("StandardGameButton", 0);
 		this.standardGameButton.setEnabled(false);
 		this.battleNetChatTopButtons.add(this.standardGameButton);
 		this.quickStandardGameButton = (GlueButtonFrame) rootFrame.getFrameByName("QuickStandardGameButton", 0);
-		this.quickStandardGameButton.setEnabled(false);
-		this.battleNetChatTopButtons.add(this.quickStandardGameButton);
+		if (this.quickStandardGameButton != null) {
+			this.quickStandardGameButton.setEnabled(false);
+			this.battleNetChatTopButtons.add(this.quickStandardGameButton);
+		}
 		this.standardTeamGameButton = (GlueButtonFrame) rootFrame.getFrameByName("StandardTeamGameButton", 0);
 		this.standardTeamGameButton.setEnabled(false);
 		this.battleNetChatTopButtons.add(this.standardTeamGameButton);
@@ -310,9 +334,12 @@ public class BattleNetUI {
 			}
 		});
 		this.battleNetChatTopButtons.add(this.customGameButton);
+		// commented out in demo
 		this.tournamentButton = (GlueButtonFrame) rootFrame.getFrameByName("TournamentButton", 0);
-		this.tournamentButton.setEnabled(false);
-		this.battleNetChatTopButtons.add(this.tournamentButton);
+		if (this.tournamentButton != null) {
+			this.tournamentButton.setEnabled(false);
+			this.battleNetChatTopButtons.add(this.tournamentButton);
+		}
 		this.ladderButton = (GlueButtonFrame) rootFrame.getFrameByName("LadderButton", 0);
 		this.ladderButton.setEnabled(false);
 		this.battleNetChatTopButtons.add(this.ladderButton);
@@ -323,22 +350,28 @@ public class BattleNetUI {
 		this.chatPanel.setVisible(false);
 		this.chatChannelNameLabel = (StringFrame) rootFrame.getFrameByName("ChatChannelNameLabel", 0);
 		this.chatChannelButton = (GlueTextButtonFrame) rootFrame.getFrameByName("ChatChannelButton", 0);
-		this.chatChannelButton.setOnClick(new Runnable() {
-			@Override
-			public void run() {
-				actionListener.showChannelChooserPanel();
-			}
-		});
+		// commented out in demo
+		if (this.chatChannelButton != null) {
+			this.chatChannelButton.setOnClick(new Runnable() {
+				@Override
+				public void run() {
+					actionListener.showChannelChooserPanel();
+				}
+			});
+		}
 		this.chatTextArea = (TextAreaFrame) rootFrame.getFrameByName("ChatTextArea", 0);
 		final EditBoxFrame chatEditBox = (EditBoxFrame) rootFrame.getFrameByName("BattleNetChatEditBox", 0);
-		chatEditBox.setFilterAllowAny();
-		chatEditBox.setOnEnter(new Runnable() {
-			@Override
-			public void run() {
-				actionListener.submitChatText(chatEditBox.getText());
-				chatEditBox.setText("", rootFrame, uiViewport);
-			}
-		});
+		// commented out in demo
+		if (chatEditBox != null) {
+			chatEditBox.setFilterAllowAny();
+			chatEditBox.setOnEnter(new Runnable() {
+				@Override
+				public void run() {
+					actionListener.submitChatText(chatEditBox.getText());
+					chatEditBox.setText("", rootFrame, uiViewport);
+				}
+			});
+		}
 		this.chatQuitBattleNetButtonContainer = (SimpleFrame) rootFrame
 				.getFrameByName("ChatQuitBattleNetButtonContainer", 0);
 
@@ -355,16 +388,19 @@ public class BattleNetUI {
 				actionListener.returnToChat();
 			}
 		});
-		this.channelNameField = (EditBoxFrame) rootFrame.getFrameByName("ChannelNameField", 0);
-		this.channelPanelJoinChannelButton = (GlueButtonFrame) rootFrame.getFrameByName("JoinChannelButton", 0);
+		this.channelNameField = (EditBoxFrame) rootFrame.getFrameByName("ChannelNameField", 0);//!
+		this.channelPanelJoinChannelButton = (GlueButtonFrame) rootFrame.getFrameByName("JoinChannelButton", 0);//!
 		final Runnable onJoinChannelClick = new Runnable() {
 			@Override
 			public void run() {
 				actionListener.requestJoinChannel(BattleNetUI.this.channelNameField.getText());
 			}
 		};
-		this.channelNameField.setOnEnter(onJoinChannelClick);
-		this.channelPanelJoinChannelButton.setOnClick(onJoinChannelClick);
+		// both commented out in demo
+		if (this.channelNameField != null)
+			this.channelNameField.setOnEnter(onJoinChannelClick);
+		if (this.channelPanelJoinChannelButton != null)
+			this.channelPanelJoinChannelButton.setOnClick(onJoinChannelClick);
 
 		// ********************************
 		// * The welcome panel
@@ -376,7 +412,8 @@ public class BattleNetUI {
 		this.welcomeNewsBoxContainer = (SimpleFrame) rootFrame.getFrameByName("NewsBoxContainer", 0);
 		this.welcomeMOTDText = (StringFrame) rootFrame.getFrameByName("WelcomeMOTDText", 0);
 		this.welcomeUpcomingTournamentPanel = rootFrame.getFrameByName("UpcomingTournamentPanel", 0);
-		this.welcomeUpcomingTournamentPanel.setVisible(false);
+		if (this.welcomeUpcomingTournamentPanel != null)
+			this.welcomeUpcomingTournamentPanel.setVisible(false);
 		this.welcomeEnterChatButton = (GlueButtonFrame) rootFrame.getFrameByName("EnterChatButton", 0);
 		this.welcomeEnterChatButton.setOnClick(new Runnable() {
 			@Override
@@ -713,7 +750,8 @@ public class BattleNetUI {
 	}
 
 	public void showLoginPrompt(final String selectedRealm) {
-		this.rootFrame.setText(this.selectedRealmValue, selectedRealm);
+		if (this.selectedRealmValue != null)
+			this.rootFrame.setText(this.selectedRealmValue, selectedRealm);
 		this.battleNetLoginPanel.setVisible(true);
 		this.battleNetCancelBackdrop.setVisible(true);
 		this.cancelButton.setOnClick(this.exitLoginRunnable);
@@ -775,7 +813,9 @@ public class BattleNetUI {
 		setTopButtonsVisible(true);
 		this.chatPanel.setVisible(true);
 		this.quitBattleNetButton.setVisible(true);
-		this.quitBattleNetButton.setParent(this.chatQuitBattleNetButtonContainer);
+		// commented out in demo
+		if(this.chatQuitBattleNetButtonContainer != null)
+			this.quitBattleNetButton.setParent(this.chatQuitBattleNetButtonContainer);
 		this.quitBattleNetButton.setWidth(0); // TODO set width/height 0 probably shouldnt be necessary
 		this.quitBattleNetButton.setHeight(0);
 		this.quitBattleNetButton.clearFramePointAssignments();

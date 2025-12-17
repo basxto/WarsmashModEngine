@@ -817,7 +817,11 @@ public class MenuUI {
 		this.warcraftIIILogo.addSetPoint(new SetPoint(FramePoint.TOPLEFT, this.mainMenuFrame, FramePoint.TOPLEFT,
 				GameUI.convertX(this.uiViewport, 0.13f), GameUI.convertY(this.uiViewport, -0.08f)));
 		setMainMenuVisible(false);
-		this.rootFrame.getFrameByName("RealmSelect", 0).setVisible(false);
+		final UIFrame RealmSelect = this.rootFrame.getFrameByName("RealmSelect", 0);
+		if (RealmSelect != null) { // missing in demo
+			RealmSelect.setVisible(false);
+		}
+		//this.rootFrame.getFrameByName("RealmSelect", 0).setVisible(false);
 
 		this.glueSpriteLayerTopRight = (SpriteFrame) this.rootFrame.createFrameByType("SPRITE",
 				"SmashGlueSpriteLayerTopRight", this.rootFrame, "", 0);
@@ -833,12 +837,14 @@ public class MenuUI {
 		this.rootFrame.setSpriteFrameModel(this.glueSpriteLayerTopLeft, topLeftModel);
 		this.glueSpriteLayerTopLeft.setSequence("MainMenu Birth");
 
-		this.glueSpriteLayerCenter = (SpriteFrame) this.rootFrame.createFrameByType("SPRITE",
-				"SmashGlueSpriteLayerCenter", this.rootFrame, "", 0);
-		this.glueSpriteLayerCenter.setSetAllPoints(true);
-		final String centerModel = this.rootFrame.getSkinField("GlueSpriteLayerCenter");
-		this.rootFrame.setSpriteFrameModel(this.glueSpriteLayerCenter, centerModel);
-		this.glueSpriteLayerCenter.setVisible(false);
+		if (this.rootFrame.hasSkinField("GlueSpriteLayerCenter")) { // missing in demo
+			this.glueSpriteLayerCenter = (SpriteFrame) this.rootFrame.createFrameByType("SPRITE",
+					"SmashGlueSpriteLayerCenter", this.rootFrame, "", 0);
+			this.glueSpriteLayerCenter.setSetAllPoints(true);
+			final String centerModel = this.rootFrame.getSkinField("GlueSpriteLayerCenter");//?
+			this.rootFrame.setSpriteFrameModel(this.glueSpriteLayerCenter, centerModel);
+			this.glueSpriteLayerCenter.setVisible(false);
+		}
 
 		this.cursorFrame = (SpriteFrame) this.rootFrame.createFrameByType("SPRITE", "SmashCursorFrame", this.rootFrame,
 				"", 0);
@@ -933,12 +939,14 @@ public class MenuUI {
 				}
 			}
 		});
-		this.realmButton.setOnClick(new Runnable() {
-			@Override
-			public void run() {
-				MenuUI.this.battleNetConnectDialog.setVisible(true);
-			}
-		});
+		if (realmButton != null) {
+			this.realmButton.setOnClick(new Runnable() {
+				@Override
+				public void run() {
+					MenuUI.this.battleNetConnectDialog.setVisible(true);
+				}
+			});
+		}
 
 		// Create single player
 		this.singlePlayerMenu = this.rootFrame.createFrame("SinglePlayerMenu", this.rootFrame, 0, 0);
@@ -1200,7 +1208,8 @@ public class MenuUI {
 					MenuUI.this.campaignSelectFrame.setVisible(false);
 					MenuUI.this.campaignWarcraftIIILogo.setVisible(false);
 					MenuUI.this.campaignRootMenuUI.setVisible(false);
-					MenuUI.this.currentMissionSelectMenuUI.setVisible(false);
+					if (MenuUI.this.currentMissionSelectMenuUI != null)
+						MenuUI.this.currentMissionSelectMenuUI.setVisible(false);
 					MenuUI.this.skirmish.setVisible(false);
 					MenuUI.this.glueSpriteLayerTopLeft.setSequence("Death");
 					MenuUI.this.glueSpriteLayerTopRight.setSequence("Death");
@@ -1791,7 +1800,9 @@ public class MenuUI {
 	private void setMainMenuButtonsEnabled(final boolean b) {
 		this.singlePlayerButton.setEnabled(b);
 		this.battleNetButton.setEnabled(b);
-		this.realmButton.setEnabled(b);
+		if ( realmButton != null) {
+			this.realmButton.setEnabled(b);
+		}
 		this.localAreaNetworkButton.setEnabled(b && ENABLE_NOT_YET_IMPLEMENTED_BUTTONS);
 		this.optionsButton.setEnabled(b && ENABLE_NOT_YET_IMPLEMENTED_BUTTONS);
 		this.creditsButton.setEnabled(b && ENABLE_NOT_YET_IMPLEMENTED_BUTTONS);
