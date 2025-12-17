@@ -161,7 +161,43 @@ public class Corner {
 		return this.waterHeight + waterOffset;
 	}
 
-	public void setWaterHeight(final float waterHeight) {
+	public void setGroundHeight(float groundHeight) {
+		this.groundHeight = groundHeight;
+	}
+
+	public void setWaterHeight(float waterHeight) {
 		this.waterHeight = waterHeight;
+	}
+
+	public void setMapEdge(int mapEdge) {
+		this.mapEdge = mapEdge;
+	}
+
+	public void setBlight(int blight) {
+		this.blight = blight;
+	}
+
+	public void setWater(int water) {
+		this.water = water;
+	}
+
+	public void setBoundary(int boundary) {
+		this.boundary = boundary;
+	}
+
+	public void setGroundTexture(int groundTexture) {
+		this.groundTexture = groundTexture;
+	}
+
+	public void setCliffVariation(int cliffVariation) {
+		this.cliffVariation = cliffVariation;
+	}
+
+	public void setGroundVariation(int groundVariation) {
+		this.groundVariation = groundVariation;
+	}
+
+	public void setLayerHeight(int layerHeight) {
+		this.layerHeight = layerHeight;
 	}
 }

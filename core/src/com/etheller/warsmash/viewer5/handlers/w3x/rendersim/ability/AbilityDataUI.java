@@ -385,7 +385,13 @@ public class AbilityDataUI {
 		this.cancelTrainUI = createBuiltInIconUI(gameUI, "CmdCancelTrain", this.disabledPrefix);
 		this.rallyUI = createBuiltInIconUI(gameUI, "CmdRally", this.disabledPrefix);
 		this.selectSkillUI = createBuiltInIconUI(gameUI, "CmdSelectSkill", this.disabledPrefix);
-		this.neutralInteractUI = getUI(War3ID.fromString("Anei")).getOnIconUI(0);
+		final AbilityUI aneuUi = getUI(War3ID.fromString("Anei"));
+		if (aneuUi != null) {
+			this.neutralInteractUI = aneuUi.getOnIconUI(0);
+		}
+		else {
+			this.neutralInteractUI = this.selectSkillUI;
+		}
 	}
 
 	private static String parseUbertip(final Warcraft3MapRuntimeObjectData allObjectData, final String originalText) {
@@ -443,8 +449,16 @@ public class AbilityDataUI {
 	}
 
 	private IconUI createBuiltInIconUI(final GameUI gameUI, final String key, final String disabledPrefix) {
-		final Element builtInAbility = gameUI.getSkinData().get(key);
-		final String iconPath = gameUI.trySkinField(builtInAbility.getField("Art"));
+		GameObject builtInAbility = gameUI.getSkinData().get(key);
+		String art;
+		if (builtInAbility != null) {
+			art = builtInAbility.getField("Art");
+		}
+		else {
+			art = "DefaultButton";
+			builtInAbility = Element.EMPTY;
+		}
+		final String iconPath = gameUI.trySkinField(art);
 		final Texture icon = gameUI.loadTexture(iconPath);
 		final Texture iconDisabled = gameUI.loadTexture(disable(iconPath, disabledPrefix));
 		final int buttonPositionX = builtInAbility.getFieldValue("Buttonpos", 0);
@@ -457,10 +471,24 @@ public class AbilityDataUI {
 	}
 
 	private IconUI createBuiltInIconUISplit(final GameUI gameUI, final String key, final String funckey,
-			final GameObject worldEditorObject, final String disabledPrefix) {
-		final Element builtInAbility = gameUI.getSkinData().get(key);
-		final Element builtInAbilityFunc = gameUI.getSkinData().get(funckey);
-		String iconPath = gameUI.trySkinField(builtInAbilityFunc.getField("Art"));
+			GameObject worldEditorObject, final String disabledPrefix) {
+		GameObject builtInAbility = gameUI.getSkinData().get(key);
+		GameObject builtInAbilityFunc = gameUI.getSkinData().get(funckey);
+		String art;
+		if (builtInAbilityFunc != null) {
+			art = builtInAbilityFunc.getField("Art");
+		}
+		else {
+			art = "DefaultButton";
+			builtInAbilityFunc = GameObject.EMPTY;
+		}
+		if (builtInAbility == null) {
+			builtInAbility = GameObject.EMPTY;
+		}
+		if (worldEditorObject == null) {
+			worldEditorObject = GameObject.EMPTY;
+		}
+		String iconPath = gameUI.trySkinField(art);
 		final String worldEditorValue = worldEditorObject.getField("Art");
 		if (worldEditorValue.length() > 0) {
 			iconPath = worldEditorValue;

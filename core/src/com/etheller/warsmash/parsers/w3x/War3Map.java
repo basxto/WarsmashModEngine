@@ -25,6 +25,7 @@ import com.etheller.warsmash.parsers.w3x.w3i.War3MapW3i;
 import com.etheller.warsmash.parsers.w3x.w3r.War3MapW3r;
 import com.etheller.warsmash.parsers.w3x.wpm.War3MapWpm;
 import com.etheller.warsmash.units.custom.WTS;
+import com.etheller.warsmash.util.WarsmashConstants;
 import com.google.common.io.LittleEndianDataInputStream;
 
 import mpq.MPQArchive;
@@ -96,7 +97,7 @@ public class War3Map implements DataSource {
 	public War3MapW3i readMapInformation() throws IOException {
 		War3MapW3i mapInfo;
 		try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream(
-				this.dataSource.getResourceAsStream("war3map.w3i"))) {
+				this.dataSource.getResourceAsStream(WarsmashConstants.MAP_CONTENTS_PREFIX + ".w3i"))) {
 			mapInfo = new War3MapW3i(stream);
 		}
 		return mapInfo;
@@ -105,7 +106,7 @@ public class War3Map implements DataSource {
 	public War3MapW3e readEnvironment() throws IOException {
 		War3MapW3e environment;
 		try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream(
-				this.dataSource.getResourceAsStream("war3map.w3e"))) {
+				this.dataSource.getResourceAsStream(WarsmashConstants.MAP_CONTENTS_PREFIX + ".w3e"))) {
 			environment = new War3MapW3e(stream);
 		}
 		return environment;
@@ -114,7 +115,7 @@ public class War3Map implements DataSource {
 	public War3MapWpm readPathing() throws IOException {
 		War3MapWpm pathingMap;
 		try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream(
-				this.dataSource.getResourceAsStream("war3map.wpm"))) {
+				this.dataSource.getResourceAsStream(WarsmashConstants.MAP_CONTENTS_PREFIX + ".wpm"))) {
 			pathingMap = new War3MapWpm(stream);
 		}
 		return pathingMap;
@@ -122,9 +123,16 @@ public class War3Map implements DataSource {
 
 	public War3MapDoo readDoodads(final War3MapW3i war3MapW3i) throws IOException {
 		War3MapDoo doodadsFile;
-		try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream(
-				this.dataSource.getResourceAsStream("war3map.doo"))) {
-			doodadsFile = new War3MapDoo(stream, war3MapW3i);
+		try (InputStream baseStream = this.dataSource
+				.getResourceAsStream(WarsmashConstants.MAP_CONTENTS_PREFIX + ".doo")) {
+			if (baseStream == null) {
+				doodadsFile = new War3MapDoo(null, war3MapW3i);
+			}
+			else {
+				try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream(baseStream)) {
+					doodadsFile = new War3MapDoo(stream, war3MapW3i);
+				}
+			}
 		}
 		return doodadsFile;
 	}
@@ -132,7 +140,7 @@ public class War3Map implements DataSource {
 	public War3MapUnitsDoo readUnits(final War3MapW3i war3MapW3i) throws IOException {
 		War3MapUnitsDoo unitsFile;
 		try (LittleEndianDataInputStream stream = new LittleEndianDataInputStream(
-				this.dataSource.getResourceAsStream("war3mapUnits.doo"))) {
+				this.dataSource.getResourceAsStream(WarsmashConstants.MAP_CONTENTS_PREFIX + "Units.doo"))) {
 			unitsFile = new War3MapUnitsDoo(stream, war3MapW3i);
 		}
 		return unitsFile;

@@ -38,6 +38,7 @@ import com.etheller.warsmash.util.ImageUtils;
 import com.etheller.warsmash.util.ImageUtils.AnyExtensionImage;
 import com.etheller.warsmash.util.RenderMathUtils;
 import com.etheller.warsmash.util.War3ID;
+import com.etheller.warsmash.util.WarsmashConstants;
 import com.etheller.warsmash.util.WorldEditStrings;
 import com.etheller.warsmash.viewer5.Camera;
 import com.etheller.warsmash.viewer5.PathSolver;
@@ -221,23 +222,24 @@ public class Terrain {
 
 		// Cliff Meshes
 
-		Map<String, Integer> cliffVars = Variations.CLIFF_VARS;
-		for (final Map.Entry<String, Integer> cliffVar : cliffVars.entrySet()) {
-			final Integer maxVariations = cliffVar.getValue();
-			for (int variation = 0; variation <= maxVariations; variation++) {
-				final String fileName = "Doodads\\Terrain\\Cliffs\\Cliffs" + cliffVar.getKey() + variation + ".mdx";
-				this.cliffMeshes.add(new CliffMesh(fileName, dataSource, Gdx.gl30));
-				this.pathToCliff.put("Cliffs" + cliffVar.getKey() + variation, this.cliffMeshes.size() - 1);
+		List<String> cliffVars = Variations.CLIFF_VARS;
+		for (final String cliffVar : cliffVars) {
+			for (int variation = 0; variation <= Variations.MAX_VAR; variation++) {
+				final String fileName = "Doodads\\Terrain\\Cliffs\\Cliffs" + cliffVar + variation + ".mdx";
+				if (dataSource.has(fileName)) {
+					this.cliffMeshes.add(new CliffMesh(fileName, dataSource, Gdx.gl30));
+					this.pathToCliff.put("Cliffs" + cliffVar + variation, this.cliffMeshes.size() - 1);
+				}
 			}
 		}
 		cliffVars = Variations.CITY_CLIFF_VARS;
-		for (final Map.Entry<String, Integer> cliffVar : cliffVars.entrySet()) {
-			final Integer maxVariations = cliffVar.getValue();
-			for (int variation = 0; variation <= maxVariations; variation++) {
-				final String fileName = "Doodads\\Terrain\\CityCliffs\\CityCliffs" + cliffVar.getKey() + variation
-						+ ".mdx";
-				this.cliffMeshes.add(new CliffMesh(fileName, dataSource, Gdx.gl30));
-				this.pathToCliff.put("CityCliffs" + cliffVar.getKey() + variation, this.cliffMeshes.size() - 1);
+		for (final String cliffVar : cliffVars) {
+			for (int variation = 0; variation <= Variations.MAX_VAR; variation++) {
+				final String fileName = "Doodads\\Terrain\\CityCliffs\\CityCliffs" + cliffVar + variation + ".mdx";
+				if (dataSource.has(fileName)) {
+					this.cliffMeshes.add(new CliffMesh(fileName, dataSource, Gdx.gl30));
+					this.pathToCliff.put("CityCliffs" + cliffVar + variation, this.cliffMeshes.size() - 1);
+				}
 			}
 		}
 
@@ -1289,10 +1291,11 @@ public class Terrain {
 		final int shadowSize = columns * rows;
 		this.staticShadowData = new byte[columns * rows];
 		this.shadowData = new byte[columns * rows];
-		if (this.viewer.mapMpq.has("war3map.shd")) {
+		if (this.viewer.mapMpq.has(WarsmashConstants.MAP_CONTENTS_PREFIX + ".shd")) {
 			final byte[] buffer;
 
-			try (final InputStream shadowSource = this.viewer.mapMpq.getResourceAsStream("war3map.shd")) {
+			try (final InputStream shadowSource = this.viewer.mapMpq
+					.getResourceAsStream(WarsmashConstants.MAP_CONTENTS_PREFIX + ".shd")) {
 				buffer = IOUtils.toByteArray(shadowSource);
 			}
 

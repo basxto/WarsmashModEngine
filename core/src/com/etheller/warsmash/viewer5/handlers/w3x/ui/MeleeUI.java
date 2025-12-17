@@ -311,8 +311,6 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 	private RenderUnit selectedUnit;
 	private final List<Integer> subMenuOrderIdStack = new ArrayList<>();
 
-	// TODO remove this & replace with FDF
-	private final Texture activeButtonTexture;
 	private UIFrame inventoryCover;
 	private SpriteFrame cursorFrame;
 	private MeleeUIMinimap meleeUIMinimap;
@@ -452,8 +450,6 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 		this.cameraManager.target.x = startLocation[0];
 		this.cameraManager.target.y = startLocation[1];
 
-		this.activeButtonTexture = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq,
-				"UI\\Widgets\\Console\\Human\\CommandButton\\human-activebutton.blp");
 		this.activeCommandUnitTargetFilter = new ActiveCommandUnitTargetFilter();
 		this.widthRatioCorrection = this.uiViewport.getMinWorldWidth() / 1600f;
 		this.heightRatioCorrection = this.uiViewport.getMinWorldHeight() / 1200f;
@@ -490,18 +486,20 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 				13.75f * this.heightRatioCorrection, 278.75f * this.widthRatioCorrection,
 				276.25f * this.heightRatioCorrection);
 		Texture minimapTexture = null;
-		if (war3MapViewer.dataSource.has("war3mapMap.tga")) {
+		if (war3MapViewer.dataSource.has(WarsmashConstants.MAP_CONTENTS_PREFIX + "Map.tga")) {
 			try {
-				minimapTexture = ImageUtils.getTextureNoColorCorrection(TgaFile.readTGA("war3mapMap.tga",
-						war3MapViewer.dataSource.getResourceAsStream("war3mapMap.tga")));
+				minimapTexture = ImageUtils.getTextureNoColorCorrection(
+						TgaFile.readTGA(WarsmashConstants.MAP_CONTENTS_PREFIX + "Map.tga", war3MapViewer.dataSource
+								.getResourceAsStream(WarsmashConstants.MAP_CONTENTS_PREFIX + "Map.tga")));
 			}
 			catch (final IOException e) {
 				System.err.println("Could not load minimap TGA file");
 				e.printStackTrace();
 			}
 		}
-		else if (war3MapViewer.dataSource.has("war3mapMap.blp")) {
-			minimapTexture = ImageUtils.getAnyExtensionTexture(war3MapViewer.dataSource, "war3mapMap.blp");
+		else if (war3MapViewer.dataSource.has(WarsmashConstants.MAP_CONTENTS_PREFIX + "Map.blp")) {
+			minimapTexture = ImageUtils.getAnyExtensionTexture(war3MapViewer.dataSource,
+					WarsmashConstants.MAP_CONTENTS_PREFIX + "Map.blp");
 		}
 		final Texture[] teamColors = new Texture[WarsmashConstants.MAX_PLAYERS];
 		for (int i = 0; i < teamColors.length; i++) {
@@ -509,14 +507,16 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 					"ReplaceableTextures\\" + ReplaceableIds.getPathString(1) + ReplaceableIds.getIdString(i) + ".blp");
 		}
 		final Texture[] specialIcons = new Texture[5];
-		specialIcons[0] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq, "UI\\MiniMap\\minimap-gold.blp");
+		specialIcons[0] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq,
+				this.rootFrame.getSkinField("MinimapResourceTexture"));
 		specialIcons[1] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq,
-				"UI\\MiniMap\\minimap-neutralbuilding.blp");
-		specialIcons[2] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq, "UI\\MiniMap\\minimap-hero.blp");
+				this.rootFrame.getSkinField("MinimapNeutralTexture"));
+		specialIcons[2] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq,
+				this.rootFrame.getSkinField("MinimapHeroTexture"));
 		specialIcons[3] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq,
-				"UI\\MiniMap\\minimap-gold-entangled.blp");
+				this.rootFrame.getSkinField("MinimapEntangledResourceTexture"));
 		specialIcons[4] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq,
-				"UI\\MiniMap\\minimap-gold-haunted.blp");
+				this.rootFrame.getSkinField("MinimapHauntedResourceTexture"));
 		final Rectangle playableMapArea = war3MapViewer.terrain.getPlayableMapArea();
 		return new MeleeUIMinimap(minimapDisplayArea, playableMapArea, minimapTexture, teamColors, specialIcons);
 	}
@@ -1136,6 +1136,8 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 			this.inventoryBarFrame.add(placeholderPreview);
 		}
 
+		final String defaultButton = this.rootFrame.getSkinField("DefaultButton");
+
 		int commandButtonIndex = 0;
 		final BitmapFont inventoryNumberOverlayFont = this.rootFrame.generateFont(DEFAULT_INVENTORY_ICON_WIDTH * 0.25f);
 		for (int j = 0; j < INVENTORY_HEIGHT; j++) {
@@ -1158,7 +1160,7 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 				iconFrame.addSetPoint(new SetPoint(FramePoint.CENTER, commandCardIcon, FramePoint.CENTER, 0, 0));
 				iconFrame.setWidth(GameUI.convertX(this.uiViewport, DEFAULT_INVENTORY_ICON_WIDTH));
 				iconFrame.setHeight(GameUI.convertY(this.uiViewport, DEFAULT_INVENTORY_ICON_WIDTH));
-				iconFrame.setTexture(ImageUtils.DEFAULT_ICON_PATH, this.rootFrame);
+				iconFrame.setTexture(defaultButton, this.rootFrame);
 				cooldownFrame.addSetPoint(new SetPoint(FramePoint.CENTER, commandCardIcon, FramePoint.CENTER, 0, 0));
 				this.rootFrame.setSpriteFrameModel(cooldownFrame, this.rootFrame.getSkinField("CommandButtonCooldown"));
 				cooldownFrame.setWidth(GameUI.convertX(this.uiViewport, DEFAULT_INVENTORY_ICON_WIDTH));
@@ -1249,7 +1251,7 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 				iconFrame.addSetPoint(new SetPoint(FramePoint.CENTER, commandCardIcon, FramePoint.CENTER, 0, 0));
 				iconFrame.setWidth(GameUI.convertX(this.uiViewport, DEFAULT_COMMAND_CARD_ICON_WIDTH));
 				iconFrame.setHeight(GameUI.convertY(this.uiViewport, DEFAULT_COMMAND_CARD_ICON_WIDTH));
-				iconFrame.setTexture(ImageUtils.DEFAULT_ICON_PATH, this.rootFrame);
+				iconFrame.setTexture(defaultButton, this.rootFrame);
 				activeHighlightFrame
 						.addSetPoint(new SetPoint(FramePoint.CENTER, commandCardIcon, FramePoint.CENTER, 0, 0));
 				activeHighlightFrame.setWidth(GameUI.convertX(this.uiViewport, DEFAULT_COMMAND_CARD_ICON_WIDTH));

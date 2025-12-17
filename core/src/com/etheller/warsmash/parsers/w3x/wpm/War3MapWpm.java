@@ -16,7 +16,7 @@ public class War3MapWpm {
 
 	public War3MapWpm(final LittleEndianDataInputStream stream) throws IOException {
 		if (stream != null) {
-			this.load(stream);
+			load(stream);
 		}
 	}
 
@@ -38,6 +38,11 @@ public class War3MapWpm {
 		stream.writeInt(this.version);
 		ParseUtils.writeInt32Array(stream, this.size);
 		ParseUtils.writeUInt8Array(stream, this.pathing);
+	}
+
+	// TODO: Fix with a better solution
+	public void save(final LittleEndianDataOutputStream stream) throws IOException {
+		save(stream, null);
 	}
 
 	public int getVersion() {
