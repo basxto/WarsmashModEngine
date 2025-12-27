@@ -113,7 +113,7 @@ import net.warsmash.uberserver.LobbyPlayerType;
 import net.warsmash.uberserver.LoginFailureReason;
 import net.warsmash.uberserver.ServerErrorMessageType;
 
-public class MenuUI {
+public class MenuUI implements WarsmashMenuUI {
 	private static final Vector2 screenCoordsVector = new Vector2();
 	private static boolean ENABLE_NOT_YET_IMPLEMENTED_BUTTONS = false;
 
@@ -238,7 +238,7 @@ public class MenuUI {
 	private DialogWar3 dialog;
 	private Task gameListQueryTask;
 	private boolean hideUI;
-	private final DataTable miscData;
+	private DataTable miscData;
 	private FogSettings menuFogSettings;
 
 	public MenuUI(final DataSource dataSource, final Viewport uiViewport, final Scene uiScene, final MdxViewer viewer,
@@ -766,10 +766,13 @@ public class MenuUI {
 	 * Called "main" because this was originally written in JASS so that maps could
 	 * override it, and I may convert it back to the JASS at some point.
 	 */
+	@Override
 	public void main() {
 		// =================================
 		// Load skins and templates
 		// =================================
+		loadWEStrings();
+		loadFog();
 		this.rootFrame = new GameUI(this.dataSource, GameUI.loadSkin(this.dataSource, WarsmashConstants.GAME_VERSION),
 				this.uiViewport, this.uiScene, this.viewer, 0, WTS.DO_NOTHING);
 
@@ -1663,6 +1666,35 @@ public class MenuUI {
 		this.glueScreenLoop.play(this.uiScene.audioContext, 0f, 0f, 0f);
 	}
 
+	private void loadWEStrings() {
+		this.worldEditStrings = new WorldEditStrings(this.dataSource);
+	}
+
+	private void loadFog() {
+		this.miscData = new DataTable(this.worldEditStrings);
+		try (InputStream miscDataTxtStream = this.dataSource.getResourceAsStream("UI\\MiscData.txt")) {
+			this.miscData.readTXT(miscDataTxtStream, true);
+		}
+		catch (final IOException e) {
+			e.printStackTrace();
+		}
+		final Element zFogElement = this.miscData.get("MenuZFog");
+		if (zFogElement != null) {
+			final int styleValue = zFogElement.getFieldAsInteger("Style", WarsmashConstants.GAME_VERSION) + 1;
+			this.menuFogSettings = new FogSettings();
+			this.menuFogSettings.setStyleByIndex(styleValue);
+			this.menuFogSettings.start = zFogElement.getFieldAsFloat("Start", WarsmashConstants.GAME_VERSION);
+			this.menuFogSettings.end = zFogElement.getFieldAsFloat("End", WarsmashConstants.GAME_VERSION);
+			this.menuFogSettings.density = zFogElement.getFieldAsFloat("Density", WarsmashConstants.GAME_VERSION);
+			final float a = zFogElement.getFieldAsFloat("Color", WarsmashConstants.GAME_VERSION * 4) / 255f;
+			final float r = zFogElement.getFieldAsFloat("Color", 1 + (WarsmashConstants.GAME_VERSION * 4)) / 255f;
+			final float g = zFogElement.getFieldAsFloat("Color", 2 + (WarsmashConstants.GAME_VERSION * 4)) / 255f;
+			final float b = zFogElement.getFieldAsFloat("Color", 3 + (WarsmashConstants.GAME_VERSION * 4)) / 255f;
+			this.menuFogSettings.color = new Color(r, g, b, a);
+		}
+	}
+
+	@Override
 	public void show() {
 		playMusic(this.rootFrame.trySkinField("GlueMusic"), true, 0);
 		this.glueScreenLoop.play(this.uiScene.audioContext, 0f, 0f, 0f);
@@ -1743,6 +1775,7 @@ public class MenuUI {
 		return string;
 	}
 
+	@Override
 	public void startMap(final String mapFilename) {
 		this.mainMenuFrame.setVisible(false);
 
@@ -1836,10 +1869,12 @@ public class MenuUI {
 		this.warcraftIIILogo.setVisible(visible);
 	}
 
+	@Override
 	public void resize() {
 		this.rootFrame.positionBounds(this.rootFrame, this.uiViewport);
 	}
 
+	@Override
 	public void render(final SpriteBatch batch, final GlyphLayout glyphLayout) {
 		if (!this.hideUI) {
 			final BitmapFont font = this.rootFrame.getFont();
@@ -1869,6 +1904,7 @@ public class MenuUI {
 		return this.uiViewport.getWorldHeight();
 	}
 
+	@Override
 	public void update(final float deltaTime) {
 		if ((this.beginGameInformation != null) && (this.menuState != MenuState.GOING_TO_MAP)) {
 			this.campaignFade.setVisible(false);
@@ -2242,7 +2278,7 @@ public class MenuUI {
 				break;
 			case RESTARTING:
 				MenuUI.this.screenManager
-						.setScreen(new WarsmashGdxMenuScreen(MenuUI.this.warsmashIni, this.screenManager));
+						.setScreen(new WarsmashGdxMenuScreen(MenuUI.this.warsmashIni, this.screenManager, WarsmashMenuUIBuilder.DEFAULT));
 				break;
 			default:
 				break;
@@ -2255,6 +2291,7 @@ public class MenuUI {
 		return this.rootFrame.getNextFocusFrame();
 	}
 
+	@Override
 	public boolean touchDown(final int screenX, final int screenY, final float worldScreenY, final int button) {
 		screenCoordsVector.set(screenX, screenY);
 		this.uiViewport.unproject(screenCoordsVector);
@@ -2284,6 +2321,7 @@ public class MenuUI {
 		}
 	}
 
+	@Override
 	public boolean touchUp(final int screenX, final int screenY, final float worldScreenY, final int button) {
 		screenCoordsVector.set(screenX, screenY);
 		this.uiViewport.unproject(screenCoordsVector);
@@ -2302,6 +2340,7 @@ public class MenuUI {
 		return false;
 	}
 
+	@Override
 	public boolean touchDragged(final int screenX, final int screenY, final float worldScreenY, final int pointer) {
 		screenCoordsVector.set(screenX, screenY);
 		this.uiViewport.unproject(screenCoordsVector);
@@ -2312,6 +2351,7 @@ public class MenuUI {
 		return false;
 	}
 
+	@Override
 	public boolean mouseMoved(final int screenX, final int screenY, final float worldScreenY) {
 		screenCoordsVector.set(screenX, screenY);
 		this.uiViewport.unproject(screenCoordsVector);
@@ -2465,17 +2505,20 @@ public class MenuUI {
 		BATTLE_NET_CUSTOM_GAME_LOBBY;
 	}
 
+	@Override
 	public void hide() {
 		this.glueScreenLoop.stop();
 		stopMusic();
 	}
 
+	@Override
 	public void dispose() {
 		if (this.rootFrame != null) {
 			this.rootFrame.dispose();
 		}
 	}
 
+	@Override
 	public boolean keyDown(final int keycode) {
 		if (this.focusUIFrame != null) {
 			this.focusUIFrame.keyDown(keycode);
@@ -2483,6 +2526,7 @@ public class MenuUI {
 		return false;
 	}
 
+	@Override
 	public boolean keyUp(final int keycode) {
 		if (keycode == Input.Keys.TAB) {
 			// accessibility tab focus ui
@@ -2504,6 +2548,7 @@ public class MenuUI {
 		return false;
 	}
 
+	@Override
 	public boolean keyTyped(final char character) {
 		if (this.focusUIFrame != null) {
 			this.focusUIFrame.keyTyped(character);
@@ -2515,6 +2560,7 @@ public class MenuUI {
 		return false;
 	}
 
+	@Override
 	public void onReturnFromGame() {
 		// MenuUI.this.campaignMenu.setVisible(true);
 		// MenuUI.this.campaignBackButton.setVisible(true);

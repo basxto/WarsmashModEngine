@@ -1,6 +1,7 @@
 package com.etheller.warsmash.util;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.etheller.warsmash.units.DataTable;
 import com.etheller.warsmash.units.Element;
@@ -16,6 +17,9 @@ public class WarsmashConstants {
 	 * whatever for custom mods and other stuff
 	 */
 	public static int GAME_VERSION = 1;
+	public static String GAME_NAME;
+	public static String MAP_CONTENTS_PREFIX;
+	public static String CAMPAIGN_CONTENTS_PREFIX;
 	public static final int REPLACEABLE_TEXTURE_LIMIT = 64;
 	public static final float SIMULATION_STEP_TIME = 1 / 20f;
 	public static final int PORT_NUMBER = GamingNetwork.UDP_SINGLE_GAME_PORT;
@@ -67,6 +71,18 @@ public class WarsmashConstants {
 	public static void loadConstants(final GameObject emulatorConstants, final DataTable warsmashIni) {
 		MAX_PLAYERS = emulatorConstants.getFieldValue("MaxPlayers");
 		GAME_VERSION = emulatorConstants.getFieldValue("GameVersion");
+		GAME_NAME = emulatorConstants.getField("GameName");
+		if (GAME_NAME.isEmpty()) {
+			GAME_NAME = GamingNetwork.GAME_ID_BASE.toLowerCase(Locale.US);
+		}
+		MAP_CONTENTS_PREFIX = emulatorConstants.getField("MapContentsPrefix");
+		if (MAP_CONTENTS_PREFIX.isEmpty()) {
+			MAP_CONTENTS_PREFIX = GAME_NAME + "map";
+		}
+		CAMPAIGN_CONTENTS_PREFIX = emulatorConstants.getField("CampaignContentsPrefix");
+		if (CAMPAIGN_CONTENTS_PREFIX.isEmpty()) {
+			CAMPAIGN_CONTENTS_PREFIX = GAME_NAME + "campaign";
+		}
 		CATCH_CURSOR = emulatorConstants.getFieldValue("CatchCursor") == 1;
 		if (emulatorConstants.getField("FullScreenMenuBackdrop") != null) {
 			FULL_SCREEN_MENU_BACKDROP = emulatorConstants.getFieldValue("FullScreenMenuBackdrop") == 1;

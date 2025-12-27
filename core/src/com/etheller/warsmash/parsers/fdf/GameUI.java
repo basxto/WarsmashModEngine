@@ -138,8 +138,9 @@ public final class GameUI extends AbstractUIFrame implements UIFrame {
 	}
 
 	public static GameSkin loadSkin(final DataSource dataSource, final String skin) {
+		final String applicationName = WarsmashConstants.GAME_NAME;
 		final DataTable skinsTable = new DataTable(StringBundle.EMPTY);
-		try (InputStream stream = dataSource.getResourceAsStream("UI\\war3skins.txt")) {
+		try (InputStream stream = dataSource.getResourceAsStream("UI\\" + applicationName + "skins.txt")) {
 			skinsTable.readTXT(stream, true);
 			try (InputStream miscDataTxtStream = dataSource.getResourceAsStream("Units\\CommandFunc.txt")) {
 				skinsTable.readTXT(miscDataTxtStream, true);
@@ -152,8 +153,9 @@ public final class GameUI extends AbstractUIFrame implements UIFrame {
 			throw new RuntimeException(e);
 		}
 		// TODO eliminate duplicate read of skin TXT!!
-		if (dataSource.has("war3mapSkin.txt")) {
-			try (InputStream miscDataTxtStream = dataSource.getResourceAsStream("war3mapSkin.txt")) {
+		final String mapSkinFilePath = WarsmashConstants.MAP_CONTENTS_PREFIX + "Skin.txt";
+		if (dataSource.has(mapSkinFilePath)) {
+			try (InputStream miscDataTxtStream = dataSource.getResourceAsStream(mapSkinFilePath)) {
 				skinsTable.readTXT(miscDataTxtStream, true);
 			}
 			catch (final IOException e) {
@@ -180,16 +182,18 @@ public final class GameUI extends AbstractUIFrame implements UIFrame {
 	}
 
 	public static GameSkin loadSkin(final DataSource dataSource, final int skinIndex) {
+		final String applicationName = WarsmashConstants.GAME_NAME;
 		final DataTable skinsTable = new DataTable(StringBundle.EMPTY);
-		try (InputStream stream = dataSource.getResourceAsStream("UI\\war3skins.txt")) {
+		try (InputStream stream = dataSource.getResourceAsStream("UI\\" + applicationName + "skins.txt")) {
 			skinsTable.readTXT(stream, true);
 		}
 		catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 		// TODO eliminate duplicate read of skin TXT!!
-		if (dataSource.has("war3mapSkin.txt")) {
-			try (InputStream miscDataTxtStream = dataSource.getResourceAsStream("war3mapSkin.txt")) {
+		final String mapSkinFilePath = WarsmashConstants.MAP_CONTENTS_PREFIX + "Skin.txt";
+		if (dataSource.has(mapSkinFilePath)) {
+			try (InputStream miscDataTxtStream = dataSource.getResourceAsStream(mapSkinFilePath)) {
 				skinsTable.readTXT(miscDataTxtStream, true);
 			}
 			catch (final IOException e) {
@@ -284,6 +288,10 @@ public final class GameUI extends AbstractUIFrame implements UIFrame {
 
 	public UIFrame createFrame(final String name, final UIFrame owner, final int priority, final int createContext) {
 		final FrameDefinition frameDefinition = this.templates.getFrame(name);
+		// hacky approach but leads to helpful exceptions from caller
+		if (frameDefinition == null) {
+			return null;
+		}
 		final UIFrame inflatedFrame = inflate(frameDefinition, owner, null, frameDefinition.has("DecorateFileNames"));
 		if (owner == this) {
 			add(inflatedFrame);
@@ -838,15 +846,17 @@ public final class GameUI extends AbstractUIFrame implements UIFrame {
 				final UIFrame disabledTexture = inflate(this.templates.getFrame(disabledTextureDefinition),
 						simpleButtonFrame, frameDefinition, decorateFileNamesOnThisFrame);
 				disabledTexture.setSetAllPoints(true);
-				final UIFrame useHighlight = inflate(this.templates.getFrame(useHighlightDefinition), simpleButtonFrame,
-						frameDefinition, decorateFileNamesOnThisFrame);
-				useHighlight.setSetAllPoints(true);
+				if (useHighlightDefinition != null) {
+					final UIFrame useHighlight = inflate(this.templates.getFrame(useHighlightDefinition),
+							simpleButtonFrame, frameDefinition, decorateFileNamesOnThisFrame);
+					useHighlight.setSetAllPoints(true);
+					simpleButtonFrame.setControlMouseOverHighlight(useHighlight);
+				}
 				simpleButtonFrame.setButtonText(normalText);
 				simpleButtonFrame.setDisabledText(disabledText);
 				simpleButtonFrame.setHighlightText(highlightText);
 				simpleButtonFrame.setControlBackdrop(normalTexture);
 				simpleButtonFrame.setControlDisabledBackdrop(disabledTexture);
-				simpleButtonFrame.setControlMouseOverHighlight(useHighlight);
 				simpleButtonFrame.setControlPushedBackdrop(pushedTexture);
 
 				final Vector2Definition pushedTextOffset = frameDefinition.getVector2("ButtonPushedTextOffset");
