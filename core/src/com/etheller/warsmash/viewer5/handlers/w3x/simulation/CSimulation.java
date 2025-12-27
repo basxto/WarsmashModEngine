@@ -325,6 +325,7 @@ public class CSimulation implements CPlayerAPI, CFogMaskSettings {
 			final float facing) {
 		final CUnit createdUnit = this.simulationRenderController.createUnit(this, typeId, playerIndex, x, y, facing);
 		if (createdUnit != null) {
+			// .setConstructing would need to be in here
 			setupCreatedUnit(createdUnit);
 			if (createdUnit.getCollisionRectangle() == null) {
 				this.worldCollision.addUnit(createdUnit);

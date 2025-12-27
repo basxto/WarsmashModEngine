@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.etheller.warsmash.units.GameObject;
 import com.etheller.warsmash.util.War3ID;
+import com.etheller.warsmash.util.WarsmashConstants;
 import com.etheller.warsmash.viewer5.handlers.w3x.simulation.CUnitTypeRequirement;
 import com.etheller.warsmash.viewer5.handlers.w3x.simulation.abilities.types.CAbilityType;
 import com.etheller.warsmash.viewer5.handlers.w3x.simulation.abilities.types.definitions.CAbilityTypeDefinition;
@@ -19,9 +20,9 @@ import com.etheller.warsmash.viewer5.handlers.w3x.simulation.data.CUnitData;
 public class CAbilityTypeDefinitionAbilityBuilder
 		extends AbstractCAbilityTypeDefinition<CAbilityTypeAbilityBuilderLevelData> implements CAbilityTypeDefinition {
 
-	private AbilityBuilderConfiguration parser;
+	private final AbilityBuilderConfiguration parser;
 
-	public CAbilityTypeDefinitionAbilityBuilder(AbilityBuilderConfiguration abilityBuilderParser) {
+	public CAbilityTypeDefinitionAbilityBuilder(final AbilityBuilderConfiguration abilityBuilderParser) {
 		super();
 		this.parser = abilityBuilderParser;
 	}
@@ -71,14 +72,14 @@ public class CAbilityTypeDefinitionAbilityBuilder
 				effects.add(War3ID.fromString(effect));
 			}
 		}
-		String[] letters = { "A", "B", "C", "D", "E", "F", "G", "H", "I" };
-		for (String letter : letters) {
+		String[] letters = WarsmashConstants.ABILITY_DATA_LETTERS;
+		for (final String letter : letters) {
 			data.add(abilityEditorData.readSLKTag("Data" + letter + level));
 		}
 		final int manaCost = abilityEditorData.readSLKTagInt(MANA_COST+level);
 		final EnumSet<CTargetType> targetsAllowedAtLevel = CTargetType.parseTargetTypeSet(targetsAllowedAtLevelString);
 		
-		int checkDeps = abilityEditorData.readSLKTagInt(CHECK_DEPENDENCIES);
+		final int checkDeps = abilityEditorData.readSLKTagInt(CHECK_DEPENDENCIES);
 		List<CUnitTypeRequirement> requirements = null;
 		if (checkDeps > 0) {
 			final List<String> requirementsString = abilityEditorData.getFieldAsList(REQUIREMENTS);

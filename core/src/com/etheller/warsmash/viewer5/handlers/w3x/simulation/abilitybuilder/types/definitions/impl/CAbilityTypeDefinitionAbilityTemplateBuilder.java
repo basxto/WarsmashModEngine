@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.etheller.warsmash.units.GameObject;
 import com.etheller.warsmash.util.War3ID;
+import com.etheller.warsmash.util.WarsmashConstants;
 import com.etheller.warsmash.viewer5.handlers.w3x.simulation.CUnitTypeRequirement;
 import com.etheller.warsmash.viewer5.handlers.w3x.simulation.abilities.types.CAbilityType;
 import com.etheller.warsmash.viewer5.handlers.w3x.simulation.abilities.types.definitions.CAbilityTypeDefinition;
@@ -71,7 +72,7 @@ public class CAbilityTypeDefinitionAbilityTemplateBuilder
 				effects.add(War3ID.fromString(effect));
 			}
 		}
-		String[] letters = { "A", "B", "C", "D", "E", "F", "G", "H", "I" };
+		String[] letters = WarsmashConstants.ABILITY_DATA_LETTERS;
 		for (String letter : letters) {
 			data.add(abilityEditorData.readSLKTag("Data" + letter + level));
 		}

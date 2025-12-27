@@ -799,13 +799,17 @@ public class MenuUI {
 			}
 		}
 		else {
-			try (InputStream campaignStringStream = this.dataSource
-					.getResourceAsStream("UI\\CampaignInfoClassic.txt")) {
-				this.campaignStrings.readTXT(campaignStringStream, true);
-				this.unifiedCampaignInfo = true;
-			}
-			catch (final IOException e) {
-				throw new RuntimeException(e);
+			final String[] attempts = { "UI\\CampaignInfoClassic.txt", "UI\\CampaignStrings.txt" };
+			for (final String stringPath : attempts) {
+				if (this.dataSource.has(stringPath)) {
+					try (InputStream campaignStringStream = this.dataSource.getResourceAsStream(stringPath)) {
+						this.campaignStrings.readTXT(campaignStringStream, true);
+						this.unifiedCampaignInfo = true;
+					}
+					catch (final IOException e) {
+						throw new RuntimeException(e);
+					}
+				}
 			}
 		}
 
@@ -841,8 +845,11 @@ public class MenuUI {
 			this.glueSpriteLayerCenter = (SpriteFrame) this.rootFrame.createFrameByType("SPRITE",
 					"SmashGlueSpriteLayerCenter", this.rootFrame, "", 0);
 			this.glueSpriteLayerCenter.setSetAllPoints(true);
-			final String centerModel = this.rootFrame.getSkinField("GlueSpriteLayerCenter");//?
-			this.rootFrame.setSpriteFrameModel(this.glueSpriteLayerCenter, centerModel);
+			final String centerModel = this.rootFrame.getSkinField("GlueSpriteLayerCenter");// ?
+			// COMMIT TODO: does this even occur?
+			if (centerModel != null) { 
+				this.rootFrame.setSpriteFrameModel(this.glueSpriteLayerCenter, centerModel);
+			}
 			this.glueSpriteLayerCenter.setVisible(false);
 		}
 
@@ -1293,7 +1300,19 @@ public class MenuUI {
 				}
 			}
 		});
-		final Element campaignIndex = this.campaignStrings.get("Index");
+		Element campaignIndex = this.campaignStrings.get("Index");
+		boolean oldFormatCampaignData = false;
+		if ((campaignIndex == null) && (this.campaignStrings.keySet().size() != 0)) {
+			final List<String> defaultCampaignIndex = new ArrayList<>();
+			defaultCampaignIndex.add("Tutorial");
+			for (int i = 0; i < WarsmashConstants.RACE_MANAGER.getEntryCount(); i++) {
+				final CRaceManagerEntry entry = WarsmashConstants.RACE_MANAGER.get(i);
+				defaultCampaignIndex.add(entry.getKey());
+			}
+			campaignIndex = new Element("Index", this.campaignStrings);
+			campaignIndex.setField("CampaignList", defaultCampaignIndex);
+			oldFormatCampaignData = true;
+		}
 		if (campaignIndex != null) {
 			this.campaignList = campaignIndex.getField("CampaignList").split(",");
 			this.campaignDatas = new CampaignMenuData[this.campaignList.length];
@@ -1301,7 +1320,7 @@ public class MenuUI {
 				final String campaign = this.campaignList[i];
 				final Element campaignElement = this.campaignStrings.get(campaign);
 				if (campaignElement != null) {
-					final CampaignMenuData newCampaign = new CampaignMenuData(campaignElement);
+					final CampaignMenuData newCampaign = new CampaignMenuData(campaignElement, oldFormatCampaignData);
 					this.campaignDatas[i] = newCampaign;
 					if (this.currentCampaign == null) {
 						this.currentCampaign = newCampaign;
@@ -1753,15 +1772,15 @@ public class MenuUI {
 			final CBasePlayer player = this.currentMapConfig.getPlayer(i);
 			if (player.getController() == CMapControl.USER) {
 				player.setSlotState(CPlayerSlotState.PLAYING);
-//					player.setName(MenuUI.this.profileManager.getCurrentProfile());
-//					break;
+				// player.setName(MenuUI.this.profileManager.getCurrentProfile());
+				// break;
 				if (localPlayerIndex == -1) {
 					localPlayerIndex = i;
 				}
 			}
 		}
 		MenuUI.this.beginGameInformation.localPlayerIndex = localPlayerIndex;
-//		this.beginGameInformation.loadingStarted = true;
+		// this.beginGameInformation.loadingStarted = true;
 		MenuUI.this.menuState = MenuState.GOING_TO_MAP;
 	}
 
@@ -1800,7 +1819,7 @@ public class MenuUI {
 	private void setMainMenuButtonsEnabled(final boolean b) {
 		this.singlePlayerButton.setEnabled(b);
 		this.battleNetButton.setEnabled(b);
-		if ( realmButton != null) {
+		if (realmButton != null) {
 			this.realmButton.setEnabled(b);
 		}
 		this.localAreaNetworkButton.setEnabled(b && ENABLE_NOT_YET_IMPLEMENTED_BUTTONS);
@@ -2497,13 +2516,13 @@ public class MenuUI {
 	}
 
 	public void onReturnFromGame() {
-//		MenuUI.this.campaignMenu.setVisible(true);
-//		MenuUI.this.campaignBackButton.setVisible(true);
-//		MenuUI.this.missionSelectFrame.setVisible(true);
-//		MenuUI.this.campaignSelectFrame.setVisible(false);
-//		MenuUI.this.campaignWarcraftIIILogo.setVisible(true);
-//		MenuUI.this.campaignRootMenuUI.setVisible(false);
-//		MenuUI.this.currentMissionSelectMenuUI.setVisible(true);
+		// MenuUI.this.campaignMenu.setVisible(true);
+		// MenuUI.this.campaignBackButton.setVisible(true);
+		// MenuUI.this.missionSelectFrame.setVisible(true);
+		// MenuUI.this.campaignSelectFrame.setVisible(false);
+		// MenuUI.this.campaignWarcraftIIILogo.setVisible(true);
+		// MenuUI.this.campaignRootMenuUI.setVisible(false);
+		// MenuUI.this.currentMissionSelectMenuUI.setVisible(true);
 		switch (this.menuState) {
 		default:
 		case GOING_TO_MAIN_MENU:
@@ -2535,9 +2554,9 @@ public class MenuUI {
 			break;
 		}
 		}
-//		MenuUI.this.campaignFade.setSequence("Death");
-//		this.campaignFade.setVisible(true);
-//		this.menuState = MenuState.MISSION_SELECT;
+		// MenuUI.this.campaignFade.setSequence("Death");
+		// this.campaignFade.setVisible(true);
+		// this.menuState = MenuState.MISSION_SELECT;
 	}
 
 	private String getRaceNameByCursorID(final int cursorId) {
@@ -2556,11 +2575,10 @@ public class MenuUI {
 
 	private String getCurrentBackgroundModel() {
 		final String background = this.currentCampaign.getBackground();
-		final String versionedBackground = background;
-		if (this.rootFrame.hasSkinField(versionedBackground)) {
-			return this.rootFrame.getSkinField(versionedBackground);
+		if (this.rootFrame.hasSkinField(background)) {
+			return this.rootFrame.getSkinField(background);
 		}
-		return this.rootFrame.getSkinField(background);
+		return null;
 	}
 
 	private static final class LoadingMap {

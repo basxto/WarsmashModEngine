@@ -376,16 +376,28 @@ public class AbilityDataUI {
 		this.buildOrcUI = createBuiltInIconUI(gameUI, "CmdBuildOrc", this.disabledPrefix);
 		this.buildNightElfUI = createBuiltInIconUI(gameUI, "CmdBuildNightElf", this.disabledPrefix);
 		this.buildUndeadUI = createBuiltInIconUI(gameUI, "CmdBuildUndead", this.disabledPrefix);
-		this.buildNagaUI = createBuiltInIconUISplit(gameUI, "CmdBuildNaga", "CmdBuildOrc",
-				abilityData.get(War3ID.fromString("AGbu")), this.disabledPrefix);
 		this.buildNeutralUI = createBuiltInIconUI(gameUI, "CmdBuild", this.disabledPrefix);
+		final GameObject nagaBuild = abilityData.get(War3ID.fromString("AGbu"));
+		if (nagaBuild != null) {
+			this.buildNagaUI = createBuiltInIconUISplit(gameUI, "CmdBuildNaga", "CmdBuildOrc", nagaBuild,
+					this.disabledPrefix);
+		}
+		else {
+			this.buildNagaUI = this.buildNeutralUI;
+		}
 		this.attackGroundUI = createBuiltInIconUI(gameUI, "CmdAttackGround", this.disabledPrefix);
 		this.cancelUI = createBuiltInIconUI(gameUI, "CmdCancel", this.disabledPrefix);
 		this.cancelBuildUI = createBuiltInIconUI(gameUI, "CmdCancelBuild", this.disabledPrefix);
 		this.cancelTrainUI = createBuiltInIconUI(gameUI, "CmdCancelTrain", this.disabledPrefix);
 		this.rallyUI = createBuiltInIconUI(gameUI, "CmdRally", this.disabledPrefix);
 		this.selectSkillUI = createBuiltInIconUI(gameUI, "CmdSelectSkill", this.disabledPrefix);
-		this.neutralInteractUI = getUI(War3ID.fromString("Anei")).getOnIconUI(0);
+		final AbilityUI neutralInteractDefault = getUI(War3ID.fromString("Anei"));
+		if (neutralInteractDefault != null) {
+			this.neutralInteractUI = neutralInteractDefault.getOnIconUI(0);
+		}
+		else {
+			this.neutralInteractUI = this.stopUI;
+		}
 	}
 
 	private static String parseUbertip(final Warcraft3MapRuntimeObjectData allObjectData, final String originalText) {

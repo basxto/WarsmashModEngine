@@ -514,9 +514,13 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 				"UI\\MiniMap\\minimap-neutralbuilding.blp");
 		specialIcons[2] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq, "UI\\MiniMap\\minimap-hero.blp");
 		specialIcons[3] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq,
-				"UI\\MiniMap\\minimap-gold-entangled.blp");
+				war3MapViewer.mapMpq.has("UI\\MiniMap\\minimap-gold-entangled.blp")
+						? "UI\\MiniMap\\minimap-gold-entangled.blp"
+						: "UI\\MiniMap\\minimap-gold.blp");
 		specialIcons[4] = ImageUtils.getAnyExtensionTexture(war3MapViewer.mapMpq,
-				"UI\\MiniMap\\minimap-gold-haunted.blp");
+				war3MapViewer.mapMpq.has("UI\\MiniMap\\minimap-gold-haunted.blp")
+						? "UI\\MiniMap\\minimap-gold-haunted.blp"
+						: "UI\\MiniMap\\minimap-gold.blp");
 		final Rectangle playableMapArea = war3MapViewer.terrain.getPlayableMapArea();
 		return new MeleeUIMinimap(minimapDisplayArea, playableMapArea, minimapTexture, teamColors, specialIcons);
 	}
@@ -743,14 +747,16 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 		this.simpleBuildingActionLabel = (StringFrame) this.rootFrame.getFrameByName("SimpleBuildingActionLabel", 0);
 		this.simpleBuildTimeIndicator = (SimpleStatusBarFrame) this.rootFrame.getFrameByName("SimpleBuildTimeIndicator",
 				0);
-		final TextureFrame simpleBuildTimeIndicatorBar = this.simpleBuildTimeIndicator.getBarFrame();
-		simpleBuildTimeIndicatorBar.setTexture("SimpleBuildTimeIndicator", this.rootFrame);
-		final TextureFrame simpleBuildTimeIndicatorBorder = this.simpleBuildTimeIndicator.getBorderFrame();
-		simpleBuildTimeIndicatorBorder.setTexture("SimpleBuildTimeIndicatorBorder", this.rootFrame);
 		final float buildTimeIndicatorWidth = GameUI.convertX(this.uiViewport, 0.10538f);
 		final float buildTimeIndicatorHeight = GameUI.convertY(this.uiViewport, 0.0103f);
-		this.simpleBuildTimeIndicator.setWidth(buildTimeIndicatorWidth);
-		this.simpleBuildTimeIndicator.setHeight(buildTimeIndicatorHeight);
+		if (this.simpleBuildTimeIndicator != null) {
+			final TextureFrame simpleBuildTimeIndicatorBar = this.simpleBuildTimeIndicator.getBarFrame();
+			simpleBuildTimeIndicatorBar.setTexture("SimpleBuildTimeIndicator", this.rootFrame);
+			final TextureFrame simpleBuildTimeIndicatorBorder = this.simpleBuildTimeIndicator.getBorderFrame();
+			simpleBuildTimeIndicatorBorder.setTexture("SimpleBuildTimeIndicatorBorder", this.rootFrame);
+			this.simpleBuildTimeIndicator.setWidth(buildTimeIndicatorWidth);
+			this.simpleBuildTimeIndicator.setHeight(buildTimeIndicatorHeight);
+		}
 
 		this.simpleHeroLevelBar = (SimpleStatusBarFrame) this.rootFrame.getFrameByName("SimpleHeroLevelBar", 0);
 		final TextureFrame simpleHeroLevelBarBar = this.simpleHeroLevelBar.getBarFrame();
@@ -1362,7 +1368,7 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 		this.rallyPointInstance.setSequenceLoopMode(SequenceLoopMode.ALWAYS_LOOP);
 		SequenceUtils.randomStandSequence(this.rallyPointInstance);
 		this.rallyPointInstance.hide();
-		this.waypointModel = this.war3MapViewer.loadModelMdx(this.rootFrame.getSkinField("WaypointIndicator"));
+		this.waypointModel = this.war3MapViewer.loadModelMdx(this.rootFrame.trySkinField("WaypointIndicator"));
 
 		this.rootFrame.positionBounds(this.rootFrame, this.uiViewport);
 
@@ -1833,7 +1839,7 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 	}
 
 	private void updateBuildTimeIndicators() {
-		if (this.simpleBuildTimeIndicator.isVisible()) {
+		if ((this.simpleBuildTimeIndicator != null) && this.simpleBuildTimeIndicator.isVisible()) {
 			this.simpleBuildTimeIndicator
 					.setValue(Math.min(this.selectedUnit.getSimulationUnit().getConstructionProgress()
 							/ this.selectedUnit.getSimulationUnit().getUnitType().getBuildTime(), 0.99f));
@@ -3002,7 +3008,9 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 			this.rootFrame.setText(this.unitLifeText, "");
 			this.rootFrame.setText(this.unitManaText, "");
 			this.rootFrame.setText(this.simpleClassValue, "");
-			this.rootFrame.setText(this.simpleBuildingActionLabel, "");
+			if (this.simpleBuildingActionLabel != null) {
+				this.rootFrame.setText(this.simpleBuildingActionLabel, "");
+			}
 			this.attack1Icon.setVisible(false);
 			this.attack2Icon.setVisible(false);
 			this.rootFrame.setText(this.attack1InfoPanelIconLevel, "");
@@ -3011,7 +3019,9 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 			this.rootFrame.setText(this.simpleBuildingNameValue, "");
 			this.armorIcon.setVisible(false);
 			this.rootFrame.setText(this.armorInfoPanelIconLevel, "");
-			this.simpleBuildTimeIndicator.setVisible(false);
+			if (this.simpleBuildTimeIndicator != null) {
+				this.simpleBuildTimeIndicator.setVisible(false);
+			}
 			this.simpleHeroLevelBar.setVisible(false);
 			this.simpleBuildingBuildTimeIndicator.setVisible(false);
 			this.simpleInfoPanelBuildingDetail.setVisible(false);
@@ -3227,7 +3237,9 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 			this.rootFrame.setText(this.simpleBuildingDescriptionValue, "");
 
 			this.simpleBuildingBuildTimeIndicator.setVisible(true);
-			this.simpleBuildTimeIndicator.setVisible(false);
+			if (this.simpleBuildTimeIndicator != null) {
+				this.simpleBuildTimeIndicator.setVisible(false);
+			}
 			this.simpleHeroLevelBar.setVisible(false);
 			if (simulationUnit.getBuildQueueTypes()[0] == QueueItemType.UNIT) {
 				this.rootFrame.setText(this.simpleBuildingBuildingActionLabel,
@@ -3297,7 +3309,9 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 			this.simpleInfoPanelDestructableDetail.setVisible(false);
 			this.simpleInfoPanelUnitDetail.setVisible(false);
 			this.simpleBuildingBuildTimeIndicator.setVisible(false);
-			this.simpleBuildTimeIndicator.setVisible(false);
+			if (this.simpleBuildTimeIndicator != null) {
+				this.simpleBuildTimeIndicator.setVisible(false);
+			}
 			this.simpleHeroLevelBar.setVisible(false);
 			this.attack1Icon.setVisible(false);
 			this.attack2Icon.setVisible(false);
@@ -3323,7 +3337,9 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 				this.attack2Icon.setVisible(false);
 				this.armorIcon.setVisible(false);
 				this.heroInfoPanel.setVisible(false);
-				this.simpleBuildTimeIndicator.setVisible(false);
+				if (this.simpleBuildTimeIndicator != null) {
+					this.simpleBuildTimeIndicator.setVisible(false);
+				}
 				this.simpleBuildingBuildTimeIndicator.setVisible(false);
 				this.selectWorkerInsideFrame.setVisible(false);
 
@@ -3502,7 +3518,9 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 				}
 
 				localArmorIcon.setVisible(!constructing);
-				this.simpleBuildTimeIndicator.setVisible(constructing);
+				if (this.simpleBuildTimeIndicator != null) {
+					this.simpleBuildTimeIndicator.setVisible(constructing);
+				}
 				this.simpleBuildingBuildTimeIndicator.setVisible(false);
 				if (constructing) {
 					War3ID constructingTypeId = simulationUnit.getTypeId();
@@ -3510,8 +3528,10 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 						constructingTypeId = simulationUnit.getUpgradeIdType();
 					}
 
-					this.rootFrame.setText(this.simpleBuildingActionLabel,
-							this.rootFrame.getTemplates().getDecoratedString("CONSTRUCTING"));
+					if (this.simpleBuildingActionLabel != null) {
+						this.rootFrame.setText(this.simpleBuildingActionLabel,
+								this.rootFrame.getTemplates().getDecoratedString("CONSTRUCTING"));
+					}
 					this.queueIconFrames[0].setVisible(true);
 					final UnitIconUI constructingUnitUI = this.war3MapViewer.getAbilityDataUI()
 							.getUnitUI(constructingTypeId);
@@ -3529,7 +3549,9 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 					}
 				}
 				else {
-					this.rootFrame.setText(this.simpleBuildingActionLabel, "");
+					if (this.simpleBuildingActionLabel != null) {
+						this.rootFrame.setText(this.simpleBuildingActionLabel, "");
+					}
 					this.selectWorkerInsideFrame.setVisible(false);
 				}
 				final War3ID armorUpgradeId = unitType.getUpgradeClassToType().get(CUpgradeClass.ARMOR);
@@ -3770,7 +3792,7 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 				if (!gameUI.hasSkinField(skinLookupKey) && (attackType == CAttackType.SPELLS)) {
 					skinLookupKey = "InfoPanelIcon" + prefix + CAttackType.MAGIC.getCodeKey() + suffix;
 				}
-				final Texture suffixTexture = gameUI.loadTexture(gameUI.getSkinField(skinLookupKey));
+				final Texture suffixTexture = gameUI.loadTexture(gameUI.trySkinField(skinLookupKey));
 				if (suffixTexture != null) {
 					this.damageBackdropTextures[index] = suffixTexture;
 				}
@@ -3779,7 +3801,7 @@ public class MeleeUI implements CUnitStateListener, CommandButtonListener, Comma
 					if (!gameUI.hasSkinField(skinLookupKey) && (attackType == CAttackType.SPELLS)) {
 						skinLookupKey = "InfoPanelIcon" + prefix + CAttackType.MAGIC.getCodeKey();
 					}
-					this.damageBackdropTextures[index] = gameUI.loadTexture(gameUI.getSkinField(skinLookupKey));
+					this.damageBackdropTextures[index] = gameUI.loadTexture(gameUI.trySkinField(skinLookupKey));
 				}
 			}
 		}
