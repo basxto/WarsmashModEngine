@@ -192,9 +192,9 @@ public class War3MapViewer extends AbstractMdxModelViewer implements MdxAssetLoa
 	public boolean terrainReady;
 	public boolean cliffsReady;
 	public boolean doodadsAndDestructiblesLoaded;
-	/*public MappedData doodadsData = new MappedData();
+	public MappedData doodadsData = new MappedData();
 	public MappedData doodadMetaData = new MappedData();
-	public MappedData destructableMetaData = new MappedData();*/
+	public MappedData destructableMetaData = new MappedData();
 	public List<RenderDoodad> doodads = new ArrayList<>();
 	public List<RenderDoodad> decals = new ArrayList<>();
 	public List<TerrainDoodad> terrainDoodads = new ArrayList<>();
@@ -311,19 +311,21 @@ public class War3MapViewer extends AbstractMdxModelViewer implements MdxAssetLoa
 
 		final GenericResource doodads = loadMapGeneric("Doodads\\Doodads.slk", FetchDataTypeName.SLK,
 				stringDataCallback);
-		/*final GenericResource doodadMetaData = loadMapGeneric("Doodads\\DoodadMetaData.slk", FetchDataTypeName.SLK,
-				stringDataCallback);*/
+		final GenericResource doodadMetaData = loadMapGeneric("Doodads\\DoodadMetaData.slk", FetchDataTypeName.SLK,
+				stringDataCallback);
 		final GenericResource destructableData = loadMapGeneric("Units\\DestructableData.slk", FetchDataTypeName.SLK,
 				stringDataCallback);
-		/*final GenericResource destructableMetaData = loadMapGeneric("Units\\DestructableMetaData.slk",
-				FetchDataTypeName.SLK, stringDataCallback);*/
+		final GenericResource destructableMetaData = loadMapGeneric("Units\\DestructableMetaData.slk",
+				FetchDataTypeName.SLK, stringDataCallback);
 
 		// == when loaded, which is always in our system ==
 		this.doodadsAndDestructiblesLoaded = true;
-		/*this.doodadsData.load(doodads.data.toString());
-		this.doodadMetaData.load(doodadMetaData.data.toString());
-		this.doodadsData.load(destructableData.data.toString());
-		this.destructableMetaData.load(destructableData.data.toString());*/
+		if (doodads.data != null && doodadMetaData.data != null && destructableData.data != null) {
+			this.doodadsData.load(doodads.data.toString());
+			this.doodadMetaData.load(doodadMetaData.data.toString());
+			this.doodadsData.load(destructableData.data.toString());
+			this.destructableMetaData.load(destructableMetaData.data.toString());
+		}
 		// emit doodads loaded
 
 		final GenericResource unitData = loadMapGeneric("Units\\UnitData.slk", FetchDataTypeName.SLK,
@@ -688,10 +690,12 @@ public class War3MapViewer extends AbstractMdxModelViewer implements MdxAssetLoa
 
 	private void loadDoodadsAndDestructibles(final Warcraft3MapRuntimeObjectData modifications,
 			final War3MapW3i w3iFile) throws IOException {
-		/*applyModificationFile(this.doodadsData, this.doodadMetaData, modifications.getDoodads(),
-				WorldEditorDataType.DOODADS);
-		applyModificationFile(this.doodadsData, this.destructableMetaData, modifications.getDestructibles(),
-				WorldEditorDataType.DESTRUCTIBLES);*/
+		if (this.doodadMetaData != null && this.destructableMetaData != null) {
+			applyModificationFile(this.doodadsData, this.doodadMetaData, modifications.getDoodads(),
+					WorldEditorDataType.DOODADS);
+			applyModificationFile(this.doodadsData, this.destructableMetaData, modifications.getDestructibles(),
+					WorldEditorDataType.DESTRUCTIBLES);
+		}
 
 		final War3MapDoo doo = this.mapMpq.readDoodads(w3iFile);
 
