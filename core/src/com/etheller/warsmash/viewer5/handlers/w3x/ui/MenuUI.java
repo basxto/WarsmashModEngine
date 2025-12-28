@@ -299,7 +299,9 @@ public class MenuUI implements WarsmashMenuUI {
 
 						MenuUI.this.battleNetUI.hide();
 						playCurrentBattleNetGlueSpriteDeath();
-						MenuUI.this.glueSpriteLayerCenter.setSequence("Death");
+						if (MenuUI.this.glueSpriteLayerCenter != null) {
+							MenuUI.this.glueSpriteLayerCenter.setSequence("Death");
+						}
 						MenuUI.this.menuState = MenuState.LEAVING_BATTLE_NET_FROM_LOGGED_IN;
 					}
 				});
@@ -1474,7 +1476,9 @@ public class MenuUI implements WarsmashMenuUI {
 					public void quitBattleNet() {
 						MenuUI.this.battleNetUI.hide();
 						playCurrentBattleNetGlueSpriteDeath();
-						MenuUI.this.glueSpriteLayerCenter.setSequence("Death");
+						if (MenuUI.this.glueSpriteLayerCenter != null) {
+							MenuUI.this.glueSpriteLayerCenter.setSequence("Death");
+						}
 						MenuUI.this.menuState = MenuState.LEAVING_BATTLE_NET_FROM_LOGGED_IN;
 						MenuUI.this.gamingNetworkConnection.userRequestDisconnect();
 					}
@@ -1484,7 +1488,7 @@ public class MenuUI implements WarsmashMenuUI {
 						MenuUI.this.battleNetUI.hideCurrentScreen();
 						playCurrentBattleNetGlueSpriteDeath();
 						final boolean insideTopBarMode = isInsideTopBarMode();
-						if (insideTopBarMode) {
+						if (insideTopBarMode && MenuUI.this.glueSpriteLayerCenter != null) {
 							MenuUI.this.glueSpriteLayerCenter.setSequence("Death");
 						}
 						MenuUI.this.menuState = MenuState.GOING_TO_BATTLE_NET_CUSTOM_GAME_MENU;
@@ -2081,7 +2085,9 @@ public class MenuUI implements WarsmashMenuUI {
 				break;
 			case LEAVING_BATTLE_NET_FROM_LOGGED_IN:
 				MenuUI.this.menuScreen.unAlternateModelBackToNormal();
-				this.glueSpriteLayerCenter.setVisible(false);
+				if (this.glueSpriteLayerCenter != null) {
+					this.glueSpriteLayerCenter.setVisible(false);
+				}
 				playMusic(this.rootFrame.trySkinField("GlueMusic"), true, 0);
 				// no break
 			case LEAVING_BATTLE_NET:
@@ -2092,8 +2098,10 @@ public class MenuUI implements WarsmashMenuUI {
 			case GOING_TO_BATTLE_NET_WELCOME:
 				MenuUI.this.glueSpriteLayerTopLeft.setSequence("BattleNetWelcome Birth");
 				MenuUI.this.glueSpriteLayerTopRight.setSequence("BattleNetWelcome Birth");
-				this.glueSpriteLayerCenter.setVisible(true);
-				this.glueSpriteLayerCenter.setSequence("Birth");
+				if (this.glueSpriteLayerCenter != null) {
+					this.glueSpriteLayerCenter.setVisible(true);
+					this.glueSpriteLayerCenter.setSequence("Birth");
+				}
 				this.menuState = MenuState.BATTLE_NET_WELCOME;
 				playMusic(this.rootFrame.trySkinField("ChatMusic"), true, 0);
 				break;
@@ -2101,7 +2109,9 @@ public class MenuUI implements WarsmashMenuUI {
 				MenuUI.this.glueSpriteLayerTopLeft.setSequence("BattleNetWelcome Stand");
 				MenuUI.this.glueSpriteLayerTopRight.setSequence("BattleNetWelcome Stand");
 				this.battleNetUI.showWelcomeScreen();
-				this.glueSpriteLayerCenter.setSequence("Stand");
+				if (this.glueSpriteLayerCenter != null) {
+					this.glueSpriteLayerCenter.setSequence("Stand");
+				}
 				this.menuState = MenuState.BATTLE_NET_WELCOME;
 				break;
 			case GOING_TO_BATTLE_NET_CUSTOM_GAME_MENU:
@@ -2135,8 +2145,10 @@ public class MenuUI implements WarsmashMenuUI {
 				MenuUI.this.glueSpriteLayerTopRight.setSequence("BattleNetChannel Stand");
 				break;
 			case GOING_TO_BATTLE_NET_CHAT_CHANNEL_FROM_OUTSIDE:
-				this.glueSpriteLayerCenter.setVisible(true);
-				this.glueSpriteLayerCenter.setSequence("Birth");
+				if (this.glueSpriteLayerCenter != null) {
+					this.glueSpriteLayerCenter.setVisible(true);
+					this.glueSpriteLayerCenter.setSequence("Birth");
+				}
 			case GOING_TO_BATTLE_NET_CHAT_CHANNEL:
 				MenuUI.this.glueSpriteLayerTopLeft.setSequence("BattleNetChatRoom Birth");
 				MenuUI.this.glueSpriteLayerTopRight.setSequence("BattleNetChatRoom Birth");
@@ -2621,10 +2633,15 @@ public class MenuUI implements WarsmashMenuUI {
 
 	private String getCurrentBackgroundModel() {
 		final String background = this.currentCampaign.getBackground();
-		if (this.rootFrame.hasSkinField(background)) {
-			return this.rootFrame.getSkinField(background);
+		final String versionedBackground = background;
+		if (background.isEmpty()) {
+			return null;
 		}
-		return null;
+		System.out.println("Ohai normal: " + background + "; versioned: " + versionedBackground);
+		if (this.rootFrame.hasSkinField(versionedBackground)) {
+			return this.rootFrame.getSkinField(versionedBackground);
+		}
+		return this.rootFrame.getSkinField(background);
 	}
 
 	private static final class LoadingMap {
