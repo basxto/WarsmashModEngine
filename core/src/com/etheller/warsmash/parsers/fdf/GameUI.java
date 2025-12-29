@@ -1580,6 +1580,16 @@ public final class GameUI extends AbstractUIFrame implements UIFrame {
 		return this.nameToFrame.get(name);
 	}
 
+	public UIFrame getFrameByNameOfParent(final String name, final String parent, final int createContext) {
+		UIFrame match = this.nameToFrame.get(name);
+		if (match != null && (match.getParent() == null || !match.getParent().getName().equals(parent))) {
+			System.err.println("Frame \"" + name + "\" has parent \"" + (match.getParent() == null? "null" : match.getParent().getName()) + "\" instead of requested parent \"" + parent + "\"");
+			return null;
+		} else {
+			return match;
+		}
+	}
+
 	public static float convertX(final Viewport viewport, final float fdfX) {
 		if (viewport instanceof ExtendViewport) {
 			return (fdfX / 0.8f) * ((ExtendViewport) viewport).getMinWorldWidth();

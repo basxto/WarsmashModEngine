@@ -381,13 +381,15 @@ public class BattleNetUI {
 		this.channelPanel = rootFrame.getFrameByName("ChannelPanel", 0);
 		this.channelPanel.setVisible(false);
 
-		this.channelPanelBackButton = (GlueButtonFrame) rootFrame.getFrameByName("BackButton", 0);
-		this.channelPanelBackButton.setOnClick(new Runnable() {
-			@Override
-			public void run() {
-				actionListener.returnToChat();
-			}
-		});
+		this.channelPanelBackButton = (GlueButtonFrame) rootFrame.getFrameByNameOfParent("BackButton", "BackBackdrop", 0);
+		if (this.channelPanelBackButton != null) {
+			this.channelPanelBackButton.setOnClick(new Runnable() {
+				@Override
+				public void run() {
+					actionListener.returnToChat();
+				}
+			});
+		}
 		this.channelNameField = (EditBoxFrame) rootFrame.getFrameByName("ChannelNameField", 0);//!
 		this.channelPanelJoinChannelButton = (GlueButtonFrame) rootFrame.getFrameByName("JoinChannelButton", 0);//!
 		final Runnable onJoinChannelClick = new Runnable() {
