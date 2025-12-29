@@ -61,6 +61,10 @@ public class ABActionTransformedUnitAbilityAdd implements ABAction {
 		}
 
 		CUnitType baseType = game.getUnitData().getUnitType(baseId);
+		// otherwise next check will crash
+		if (baseType == null) {
+			return;
+		}
 
 		// Always Transforming back
 		CUnitType targetType = baseType;

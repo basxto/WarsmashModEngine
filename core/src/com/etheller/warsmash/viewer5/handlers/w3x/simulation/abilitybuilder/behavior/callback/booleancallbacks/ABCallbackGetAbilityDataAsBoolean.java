@@ -22,7 +22,7 @@ public class ABCallbackGetAbilityDataAsBoolean extends ABBooleanCallback {
 		final int level = (int) localStore.get(ABLocalStoreKeys.CURRENTLEVEL);
 
 		final String data = levelData.get(level - 1).getData().get(this.dataField.getIndex());
-		if (data.equals("-")) {
+		if (data.equals("-") || data.isBlank()) {
 			return false;
 		}
 		return Integer.parseInt(data) == 1;

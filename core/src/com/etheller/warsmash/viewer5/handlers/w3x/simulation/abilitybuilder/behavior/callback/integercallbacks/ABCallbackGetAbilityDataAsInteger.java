@@ -22,9 +22,10 @@ public class ABCallbackGetAbilityDataAsInteger extends ABIntegerCallback {
 		final int level = (int) localStore.get(ABLocalStoreKeys.CURRENTLEVEL);
 
 		final String data = levelData.get(level - 1).getData().get(this.dataField.getIndex());
-		if ("-".equals(data)) {
+		if ("-".equals(data) || data.isBlank()) {
 			return 0;
 		}
+		System.err.println("data:" + data);
 		return Integer.parseInt(data);
 	}
 
