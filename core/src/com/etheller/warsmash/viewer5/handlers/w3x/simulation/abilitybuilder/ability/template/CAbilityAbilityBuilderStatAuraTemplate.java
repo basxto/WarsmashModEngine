@@ -144,6 +144,8 @@ public class CAbilityAbilityBuilderStatAuraTemplate extends AbilityGenericSingle
 			targetRange = true;
 			break;
 		default:
+			System.err.println("getIndex:" + parsedBuff.getDataField().getIndex());
+			System.err.println("getData().get:" + levelData.get(getLevel() - 1).getData().get(parsedBuff.getDataField().getIndex()));
 			newBuff = new NonStackingStatBuff(type, this.auraStackingKey, Float
 					.parseFloat(levelData.get(getLevel() - 1).getData().get(parsedBuff.getDataField().getIndex())));
 			parsedBuff.setBuff(newBuff);

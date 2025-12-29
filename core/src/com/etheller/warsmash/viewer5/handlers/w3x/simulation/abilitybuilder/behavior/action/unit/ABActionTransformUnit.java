@@ -71,7 +71,7 @@ public class ABActionTransformUnit implements ABAction {
 		if (u1.getTypeId().equals(altId)) {
 			// Transforming back
 			targetType = game.getUnitData().getUnitType(baseId);
-			if (targetType.equals(u1.getUnitType())) {
+			if (targetType == null || targetType.equals(u1.getUnitType())) {
 				// No need to do anything
 				return;
 			}

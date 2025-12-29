@@ -11,7 +11,11 @@ public class ABConditionIsTransformingToAlternate implements ABCondition {
 
 	@Override
 	public boolean evaluate(CSimulation game, CUnit caster, Map<String, Object> localStore, final int castId) {
-		return (boolean) localStore.get(ABLocalStoreKeys.TRANSFORMINGTOALT +castId);
+		Object cast = localStore.get(ABLocalStoreKeys.TRANSFORMINGTOALT +castId);
+		if(cast == null) {
+			return false;
+		}
+		return (boolean) cast;
 	}
 
 }
