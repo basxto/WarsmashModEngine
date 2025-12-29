@@ -1582,12 +1582,18 @@ public final class GameUI extends AbstractUIFrame implements UIFrame {
 
 	public UIFrame getFrameByNameOfParent(final String name, final String parent, final int createContext) {
 		UIFrame match = this.nameToFrame.get(name);
-		if (match != null && (match.getParent() == null || !match.getParent().getName().equals(parent))) {
+		if (match != null) {
+			UIFrame nextParent = match.getParent();
+			// check all ancestors
+			while (nextParent != null) {
+				if (match.getParent().getName().equals(parent)) {
+					return match;
+				}
+				nextParent = nextParent.getParent();
+			}
 			System.err.println("Frame \"" + name + "\" has parent \"" + (match.getParent() == null? "null" : match.getParent().getName()) + "\" instead of requested parent \"" + parent + "\"");
-			return null;
-		} else {
-			return match;
 		}
+		return null;
 	}
 
 	public static float convertX(final Viewport viewport, final float fdfX) {
