@@ -252,15 +252,15 @@ public class CGameplayConstants {
 		this.awakenMaxFactor = miscData.getFieldFloatValue("AwakenMaxFactor");
 
 		this.maxHeroLevel = miscData.getFieldValue("MaxHeroLevel");
-		this.maxUnitLevel = miscData.getFieldValue("MaxUnitLevel");
+		this.maxUnitLevel = (!miscData.hasField("MaxUnitLevel")?10:miscData.getFieldValue("MaxUnitLevel"));
 
-		this.needHeroXPFormulaA = miscData.getFieldValue("NeedHeroXPFormulaA");
+		this.needHeroXPFormulaA = (!miscData.hasField("NeedHeroXPFormulaA")?1:miscData.getFieldValue("NeedHeroXPFormulaA"));
 		this.needHeroXPFormulaB = miscData.getFieldValue("NeedHeroXPFormulaB");
 		this.needHeroXPFormulaC = miscData.getFieldValue("NeedHeroXPFormulaC");
-		this.grantHeroXPFormulaA = miscData.getFieldValue("GrantHeroXPFormulaA");
+		this.grantHeroXPFormulaA = (!miscData.hasField("NeedHeroXPFormulaA")?1:miscData.getFieldValue("GrantHeroXPFormulaA"));
 		this.grantHeroXPFormulaB = miscData.getFieldValue("GrantHeroXPFormulaB");
 		this.grantHeroXPFormulaC = miscData.getFieldValue("GrantHeroXPFormulaC");
-		this.grantNormalXPFormulaA = miscData.getFieldValue("GrantNormalXPFormulaA");
+		this.grantNormalXPFormulaA = (!miscData.hasField("NeedHeroXPFormulaA")?1:miscData.getFieldValue("GrantNormalXPFormulaA"));
 		this.grantNormalXPFormulaB = miscData.getFieldValue("GrantNormalXPFormulaB");
 		this.grantNormalXPFormulaC = miscData.getFieldValue("GrantNormalXPFormulaC");
 
@@ -279,7 +279,7 @@ public class CGameplayConstants {
 				this.grantHeroXPFormulaB, this.grantHeroXPFormulaC, this.maxHeroLevel);
 		this.grantNormalXp = parseTable(miscData.getField("GrantNormalXP"), this.grantNormalXPFormulaA,
 				this.grantNormalXPFormulaB, this.grantNormalXPFormulaC, this.maxUnitLevel);
-		this.heroFactorXp = parseIntArray(miscData.getField("HeroFactorXP"));
+		this.heroFactorXp = parseIntArray((!miscData.hasField("HeroFactorXP")?"100":miscData.getField("HeroFactorXP")));
 		this.summonedKillFactor = miscData.getFieldFloatValue("SummonedKillFactor");
 		this.strAttackBonus = miscData.getFieldFloatValue("StrAttackBonus");
 		this.strHitPointBonus = miscData.getFieldFloatValue("StrHitPointBonus");
